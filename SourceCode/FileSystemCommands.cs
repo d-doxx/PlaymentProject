@@ -74,16 +74,23 @@ namespace PlaymentProject
             string [] nodes = path.Split('/', StringSplitOptions.RemoveEmptyEntries); 
             foreach(string node in nodes)
             {
-                if(!Tree[traversalNode].Contains(node)) // node not present in parent's adjacency list
+                if(node ==  "..") // reset traversalNode to its parent node
                 {
-                    Console.WriteLine("ERR: INVALID PATH");
-                    return -1; // -1 return value indicates invalid path
+                    traversalNode = Parent[traversalNode];                    
                 }
-                traversalNode = ReverseLookup[Tuple.Create(traversalNode, node)];
+                else if(node != ".") // no need to do anything if node is . (current node)
+                {
+                    if(!Tree[traversalNode].Contains(node)) // node not present in parent's adjacency list
+                    {
+                        Console.WriteLine("ERR: INVALID PATH");
+                        return -1; // -1 return value indicates invalid path
+                    }
+                    traversalNode = ReverseLookup[Tuple.Create(traversalNode, node)];
+                }                
             }
             return traversalNode;
         }
-        private void CreateNode(int nodeId, string nodeName)
+        private int CreateNode(int parentNodeId, string nodeName)
         {
             /*
             Creating new node - 
@@ -92,13 +99,14 @@ namespace PlaymentProject
                 Updating ReverseLookup
             */                    
             NodeIdCounter++;
-            Tree[nodeId].Add(nodeName);
+            Tree[parentNodeId].Add(nodeName);
             Tree[NodeIdCounter] = new HashSet<string>();
             NodeInfo[NodeIdCounter] = nodeName;
-            Parent[NodeIdCounter] = nodeId;
-            ReverseLookup[Tuple.Create(nodeId, nodeName)] = NodeIdCounter;
+            Parent[NodeIdCounter] = parentNodeId;
+            ReverseLookup[Tuple.Create(parentNodeId, nodeName)] = NodeIdCounter;
+            return NodeIdCounter;
         }
-        private void RemoveNode(int nodeId, string nodeName)
+        private int RemoveNode(int nodeId, string nodeName)
         {
             /*
             Removing node - 
@@ -109,6 +117,7 @@ namespace PlaymentProject
             Tree[parentNode].Remove(nodeName);
             ReverseLookup.Remove(Tuple.Create(parentNode, nodeName));
             Parent[nodeId] = 0;
+            return nodeId;
         }
         private void List()
         {
@@ -137,35 +146,42 @@ namespace PlaymentProject
         }
         private int MakeDirectory(string path)
         {
-            int lastNode = -1;
-            if(path != "/") // cannot create root
+            if(path == "/") // cannot create root
             {
-                path = FileSystemUtilities.RemoveLastSlash(path);
-                string nodeToCreate;
-                int lastIndexOfSlash = path.LastIndexOf('/');
-                if(lastIndexOfSlash == -1) // no slash present in path, input is the node to create 
+                Console.WriteLine("ERR: CANNOT CREATE ROOT");
+                return -1;
+            }
+            path = FileSystemUtilities.RemoveLastSlash(path);
+            string nodeToCreate;
+            int lastIndexOfSlash = path.LastIndexOf('/'), lastNode = -1;
+            if(lastIndexOfSlash == -1) // no slash present in path, input is the node to create 
+            {
+                nodeToCreate = path;
+                if(nodeToCreate == ".." || nodeToCreate == ".")
                 {
-                    nodeToCreate = path;
-                    lastNode = CurrentNode;
+                    Console.WriteLine("ERR: NODE TO CREATE SHOULD BE EXPANDED NAME");
+                    return -1; // return as soon as breaking condition is identified
                 }
-                else
-                {
-                    nodeToCreate = path.Substring(lastIndexOfSlash + 1); // part of path after last /
-                    lastNode = Traversal(path.Substring(0, lastIndexOfSlash)); // pass path's substring as arguement, because nodeToCreate is not present in current file tree
-                }
-                if(lastNode != -1)
-                {
-                    if(Tree[lastNode].Contains(nodeToCreate)) // node alreaady present in parent's adjacency list
-                    {
-                        Console.WriteLine("ERR: DIRECTORY ALREADY EXISTS");                        
-                    }
-                    CreateNode(lastNode, nodeToCreate);
-                    Console.WriteLine("SUCC: CREATED");
-                }
+                lastNode = CurrentNode;
             }
             else
             {
-                Console.WriteLine("ERR: CANNOT CREATE ROOT");
+                nodeToCreate = path.Substring(lastIndexOfSlash + 1); // part of path after last /
+                if(nodeToCreate == ".." || nodeToCreate == ".")
+                {
+                    Console.WriteLine("ERR: NODE TO CREATE SHOULD BE EXPANDED NAME");
+                    return -1;
+                }
+                lastNode = Traversal(path.Substring(0, lastIndexOfSlash)); // pass path's substring as arguement, because nodeToCreate is not present in current file tree
+            }
+            if(lastNode != -1)
+            {
+                if(Tree[lastNode].Contains(nodeToCreate)) // node already present in parent's adjacency list
+                {
+                    Console.WriteLine("ERR: DIRECTORY ALREADY EXISTS");                        
+                }
+                lastNode = CreateNode(lastNode, nodeToCreate);
+                Console.WriteLine("SUCC: CREATED");
             }
             return lastNode;          
         }
@@ -181,27 +197,29 @@ namespace PlaymentProject
         }
         private int Remove(string path)
         {
-            int lastNode = -1;
-            if(path != "/") // cannot remove root
-            {
-                path = FileSystemUtilities.RemoveLastSlash(path);
-                int lastIndexOfSlash = path.LastIndexOf('/');
-                lastNode = Traversal(path);
-                string nodeToRemove = lastIndexOfSlash == -1 ? path : path.Substring(lastIndexOfSlash + 1); // if no slash present in path, input is the node to create, else extract it as substring
-                if(lastNode != -1)
-                {
-                    if(!Tree[Parent[lastNode]].Contains(nodeToRemove)) // node alreaady present in parent's adjacency list
-                    {
-                        Console.WriteLine("ERR: INVALID PATH");
-                        return -1;
-                    }
-                    RemoveNode(lastNode, nodeToRemove);
-                    Console.WriteLine("SUCC: DELETED");
-                }
-            }
-            else
+            if(path == "/") // cannot remove root
             {
                 Console.WriteLine("ERR: CANNOT REMOVE ROOT");
+                return -1;
+            }
+            path = FileSystemUtilities.RemoveLastSlash(path);
+            int lastIndexOfSlash = path.LastIndexOf('/');
+            string nodeToRemove = lastIndexOfSlash == -1 ? path : path.Substring(lastIndexOfSlash + 1); // if no slash present in path, input is the node to create, else extract it as substring
+            if(nodeToRemove == ".." || nodeToRemove == ".")
+            {
+                Console.WriteLine("ERR: NODE TO CREATE SHOULD BE EXPANDED NAME");
+                return -1;
+            }
+            int lastNode = Traversal(path);
+            if(lastNode != -1)
+            {
+                if(!Tree[Parent[lastNode]].Contains(nodeToRemove)) // node not present in directory
+                {
+                    Console.WriteLine("ERR: INVALID PATH");
+                    return -1;
+                }
+                RemoveNode(lastNode, nodeToRemove);
+                Console.WriteLine("SUCC: DELETED");
             }
             return lastNode;         
         }
