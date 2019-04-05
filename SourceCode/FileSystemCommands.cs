@@ -204,10 +204,10 @@ namespace PlaymentProject
             }
             path = FileSystemUtilities.RemoveLastSlash(path);
             int lastIndexOfSlash = path.LastIndexOf('/');
-            string nodeToRemove = lastIndexOfSlash == -1 ? path : path.Substring(lastIndexOfSlash + 1); // if no slash present in path, input is the node to create, else extract it as substring
+            string nodeToRemove = lastIndexOfSlash == -1 ? path : path.Substring(lastIndexOfSlash + 1); // if no slash present in path, input is the node to remove, else extract it as substring
             if(nodeToRemove == ".." || nodeToRemove == ".")
             {
-                Console.WriteLine("ERR: NODE TO CREATE SHOULD BE EXPANDED NAME");
+                Console.WriteLine("ERR: NODE TO REMOVE SHOULD BE EXPANDED NAME");
                 return -1;
             }
             int lastNode = Traversal(path);

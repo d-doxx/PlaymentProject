@@ -1,0 +1,13 @@
+/home/dhruv/PlaymentProject/SourceCode/bin/Release/netcoreapp2.0/win10-x64/hostpolicy.dll
+/home/dhruv/PlaymentProject/SourceCode/bin/Release/netcoreapp2.0/win10-x64/hostfxr.dll
+/home/dhruv/PlaymentProject/SourceCode/bin/Release/netcoreapp2.0/win10-x64/SourceCode.exe
+/home/dhruv/PlaymentProject/SourceCode/bin/Release/netcoreapp2.0/win10-x64/SourceCode.deps.json
+/home/dhruv/PlaymentProject/SourceCode/bin/Release/netcoreapp2.0/win10-x64/SourceCode.runtimeconfig.json
+/home/dhruv/PlaymentProject/SourceCode/bin/Release/netcoreapp2.0/win10-x64/SourceCode.runtimeconfig.dev.json
+/home/dhruv/PlaymentProject/SourceCode/bin/Release/netcoreapp2.0/win10-x64/SourceCode.dll
+/home/dhruv/PlaymentProject/SourceCode/bin/Release/netcoreapp2.0/win10-x64/SourceCode.pdb
+/home/dhruv/PlaymentProject/SourceCode/obj/Release/netcoreapp2.0/win10-x64/SourceCode.csproj.CoreCompileInputs.cache
+/home/dhruv/PlaymentProject/SourceCode/obj/Release/netcoreapp2.0/win10-x64/SourceCode.AssemblyInfoInputs.cache
+/home/dhruv/PlaymentProject/SourceCode/obj/Release/netcoreapp2.0/win10-x64/SourceCode.AssemblyInfo.cs
+/home/dhruv/PlaymentProject/SourceCode/obj/Release/netcoreapp2.0/win10-x64/SourceCode.dll
+/home/dhruv/PlaymentProject/SourceCode/obj/Release/netcoreapp2.0/win10-x64/SourceCode.pdb
