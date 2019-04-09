@@ -116,7 +116,7 @@ namespace PlaymentProject
             int parentNode = Parent[nodeId];
             Tree[parentNode].Remove(nodeName);
             ReverseLookup.Remove(Tuple.Create(parentNode, nodeName));
-            Parent[nodeId] = 0;
+            Parent[nodeId] = -1;
             return nodeId;
         }
         private void List()
@@ -178,7 +178,8 @@ namespace PlaymentProject
             {
                 if(Tree[lastNode].Contains(nodeToCreate)) // node already present in parent's adjacency list
                 {
-                    Console.WriteLine("ERR: DIRECTORY ALREADY EXISTS");                        
+                    Console.WriteLine("ERR: DIRECTORY ALREADY EXISTS");
+                    return -1;                        
                 }
                 lastNode = CreateNode(lastNode, nodeToCreate);
                 Console.WriteLine("SUCC: CREATED");
